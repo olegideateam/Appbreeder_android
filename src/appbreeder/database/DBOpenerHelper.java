@@ -5,6 +5,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import appbreeder.bll.BaseApplicationManager;
 
 public class DBOpenerHelper extends SQLiteOpenHelper{
 
@@ -24,7 +25,7 @@ public class DBOpenerHelper extends SQLiteOpenHelper{
     public static final String ABSKIN_TABLE_NAME = "ABSkin";
     public static final String ABTAB_TABLE_NAME = "ABTab";
     
-    public static final String DATABASE_NAME = "/data/data/com.appbreeder.android/appbreeder.db3";
+    //public static final String DATABASE_NAME = "/data/data/com.appbreeder.android/appbreeder.db3";
 
 	
 	@Override
@@ -50,7 +51,7 @@ public class DBOpenerHelper extends SQLiteOpenHelper{
 	}
 	
 	public DBOpenerHelper(Context context){
-		super(context,DATABASE_NAME, null, DATABASE_VERSION);
+		super(context,BaseApplicationManager.currentDBPath, null, DATABASE_VERSION);
 		//this.context = context;
 		Log.e("DBOpenerHelper", "Constructor");
 	}

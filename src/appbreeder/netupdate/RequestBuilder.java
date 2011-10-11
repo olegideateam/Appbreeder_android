@@ -55,25 +55,25 @@ public class RequestBuilder {
 	 }
 	public static HttpUriRequest buildReqest_GetSQLiteDatabase(int appID) {
 		HttpPost request = new HttpPost(getServiseHost(null)
-			//	+ "/GetAllApp");//
-				+"/GetSQLiteDatabase");//?ID="+appID);
+				+"/GetSQLiteDatabase");
 		setRequestBaseHeader(request);
-		
 		JSONObject json = new JSONObject();
 		   try {
 			json .put("ID", appID);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		   try {
 			request.setEntity(new ByteArrayEntity(json.toString().getBytes("UTF8")));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+		} catch (UnsupportedEncodingException e) {	
 			e.printStackTrace();
 		}
-      //  nameValuePairs.add(new BasicNameValuePair("product_id", productID));
+     
         
+		return request;
+	}
+	public static HttpUriRequest buildReqest_LoadDB(String urlDB) {
+		HttpGet request = new HttpGet(urlDB);//?ID="+appID);
 		return request;
 	}
 	public static HttpUriRequest buildReqest_CheckAppForUpdate(String appData, String skinData) {

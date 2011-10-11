@@ -20,9 +20,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Environment;
 import appbreeder.activity.R;
+import appbreeder.controls.app.ABAppRecord;
 import appbreeder.netupdate.RequestBuilder;
 
 public class BaseApplicationManager {
@@ -30,21 +32,33 @@ public class BaseApplicationManager {
 	private static Context appContext;
 	public static String externalBasePath;
 	public static int appID;
-	public static int appBrendName;
-
+	public static String appBrendName;
+	public static String currentDBPath;
+	public static ABAppRecord currentApp = null;
 	public static void initBaseData(Context mContext)
 	{
 		appContext=mContext;
-		externalBasePath=Environment.getExternalStorageState();
+		externalBasePath=Environment.getExternalStorageDirectory().getAbsolutePath();
 		RequestBuilder.getServiseHost(mContext);
 		appID=Integer.parseInt(mContext.getResources().getString(R.string.appID));
-		appBrendName=Integer.parseInt(mContext.getResources().getString(R.string.app_brend));
+		appBrendName=mContext.getResources().getString(R.string.app_brend);
 	}
 
 	public static String getGuid() {
 		return "" + new Date().getTime();
 	}
-
+	public static void ShowErrorWindow(Context mContext, String errorMessage) {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mContext);
+		alertBuilder.setMessage(errorMessage).setTitle("Error");
+		alertBuilder.setNegativeButton("Close", null);
+		alertBuilder.show();
+	}
+	public static void ShowMessageWindow(Context mContext,String title, String message) {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mContext);
+		alertBuilder.setMessage(message).setTitle(title);
+		alertBuilder.setNegativeButton("Close", null);
+		alertBuilder.show();
+	}
 	public static String streamToString(InputStream is) {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		StringBuilder sb = new StringBuilder();
@@ -102,8 +116,17 @@ public class BaseApplicationManager {
 		File foldePath = Constants.getFileForFolder(Constants
 				.getPathTempFolder().getAbsolutePath() + "/" + getGuid());
 		String pathToFile = foldePath.getAbsolutePath() + fileName;
+		if(!saveInputStreamToFile(pathToFile,in))
+		{
+			pathToFile ="";
+		}
+		return pathToFile ;
+
+	}
+	public static boolean saveInputStreamToFile(String filePath, InputStream in) {
+		boolean resalt=false;
 		try {
-			FileOutputStream fos = new FileOutputStream(pathToFile, false);
+			FileOutputStream fos = new FileOutputStream(filePath, false);
 			OutputStream os = new BufferedOutputStream(fos);
 			byte[] buffer = new byte[1024];
 			int byteRead = 0;
@@ -111,12 +134,14 @@ public class BaseApplicationManager {
 			while ((byteRead = in.read(buffer)) != -1) {
 				os.write(buffer, 0, byteRead);
 			}
+			os.flush();
+			os.close();
 			fos.close();
+			resalt=true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			pathToFile ="";
 		}
-		return pathToFile ;
+		return resalt;
 
 	}
 }

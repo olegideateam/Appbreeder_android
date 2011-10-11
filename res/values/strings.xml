@@ -3,6 +3,6 @@
     
     <string name="app_name">AppBreeder preview</string>
     <string name="appID">1</string>
-    <string name="app_brend">preview</string>
+    <string name="app_brend">preview.appbreeder</string>
     <string name="service_host">http://devdata.appbreeder.com/Service.asmx</string>
 </resources>
