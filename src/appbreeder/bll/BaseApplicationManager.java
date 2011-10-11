@@ -90,7 +90,6 @@ public class BaseApplicationManager {
 		}
 		return tryJson;
 	}
-
 	public static InputStream getStreamFromUrl(String urlString)
 			throws MalformedURLException, IOException {
 		DefaultHttpClient httpClient = new DefaultHttpClient();

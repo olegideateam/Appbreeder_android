@@ -59,7 +59,7 @@ public class AsynchronousSender extends Thread {
 			// FakeSocketFactory() : SSLSocketFactory.getSocketFactory()),
 			// 443));
 
-			Log.i("getReqest.getURI()",request.getURI().getPath());
+			Log.i("getReqest.getURI()",""+request.getURI());
 			
 			
 			response = getClient().execute(request);

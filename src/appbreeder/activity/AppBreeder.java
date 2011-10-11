@@ -48,6 +48,8 @@ import appbreeder.controls.gadget.ABTabRecord;
 import appbreeder.controls.gadget.TabsDBManager;
 import appbreeder.database.AppDBManager;
 import appbreeder.database.DBOpenerHelper;
+import appbreeder.netupdate.RequestBuilder;
+import appbreeder.netupdate.UpdateManager;
 
 public class AppBreeder extends Activity {
 	
@@ -106,10 +108,17 @@ public class AppBreeder extends Activity {
         gridParent = (LinearLayout) mInflater.inflate(R.layout.more_layout, null);
         gvMoreTabs = (GridView) gridParent.findViewById(R.id.gvMoreTabs);
         gvMoreTabs.setAdapter(new TabsGridAdapter(this, tabsList));   
+        RequestBuilder.getServiseHost(this);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        loadingNetDB();
+        UpdateManager.updateDataBase(1, handlerCallbackgetDataBase);
+        //loadingNetDB();
         
     }
+    Handler handlerCallbackgetDataBase=new Handler()
+    {
+    	public void handleMessage(Message msg) {}
+    	;
+    };
     
     public void onConfigurationChanged (Configuration newConfig)
     {
