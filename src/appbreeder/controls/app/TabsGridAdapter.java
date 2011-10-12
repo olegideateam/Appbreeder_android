@@ -2,14 +2,16 @@ package appbreeder.controls.app;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import appbreeder.activity.R;
+import appbreeder.bll.BaseApplicationManager;
 import appbreeder.controls.gadget.ABTabRecord;
 
 public class TabsGridAdapter extends BaseAdapter {
@@ -40,14 +42,19 @@ public class TabsGridAdapter extends BaseAdapter {
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
+	
 		if (convertView==null) {
 			View tab = mInflater.inflate(R.layout.tab_button_layout, null);
 			convertView = tab;
-			ImageButton but = (ImageButton) convertView.findViewById(R.id.ibTabButton);
+			ImageView but = (ImageView) convertView.findViewById(R.id.ibTabButton);
+			but.setTag(tabsList.get(position+4).getIcon());
+			BaseApplicationManager.imageLoader.DisplayImage(tabsList.get(position+4).getIcon(), (Activity)but .getContext(),
+					but);
 			tab.setId(position+5);
+			
 			but.setId(position+5);
 			TextView tv = (TextView) tab.findViewById(R.id.tvTabButton);
+			
 			tv.setText(tabsList.get(position+4).getTitle());
 			convertView.setId(position+4);
 		}

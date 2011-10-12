@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Environment;
@@ -30,11 +31,13 @@ import appbreeder.netupdate.RequestBuilder;
 public class BaseApplicationManager {
 
 	private static Context appContext;
+	public static String baseDomainForResources;
 	public static String externalBasePath;
 	public static int appID;
 	public static String appBrendName;
 	public static String currentDBPath;
 	public static ABAppRecord currentApp = null;
+	public static ImageLoader imageLoader;
 	public static void initBaseData(Context mContext)
 	{
 		appContext=mContext;
@@ -42,6 +45,8 @@ public class BaseApplicationManager {
 		RequestBuilder.getServiseHost(mContext);
 		appID=Integer.parseInt(mContext.getResources().getString(R.string.appID));
 		appBrendName=mContext.getResources().getString(R.string.app_brend);
+		baseDomainForResources=mContext.getResources().getString(R.string.baseDomainForResources);
+		imageLoader = new ImageLoader(mContext);
 	}
 
 	public static String getGuid() {

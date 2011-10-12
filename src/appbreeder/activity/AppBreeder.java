@@ -1,55 +1,32 @@
 package appbreeder.activity;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.ByteArrayBuffer;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import appbreeder.bll.BaseApplicationManager;
-import appbreeder.bll.Constants;
 import appbreeder.controls.app.ABAppRecord;
 import appbreeder.controls.app.TabsGridAdapter;
 import appbreeder.controls.gadget.ABTabRecord;
 import appbreeder.controls.gadget.TabsDBManager;
 import appbreeder.database.AppDBManager;
-import appbreeder.database.DBOpenerHelper;
 import appbreeder.netupdate.RequestBuilder;
 import appbreeder.netupdate.UpdateManager;
 
@@ -266,13 +243,16 @@ public class AppBreeder extends Activity {
 
 			for (int i = 0; i < faceTabsNumber; i++) {
 				View tab = mInflater.inflate(R.layout.tab_button_layout, null);
-				ImageButton but = (ImageButton) tab
+				ImageView but = (ImageView) tab
 						.findViewById(R.id.ibTabButton);
+				but.setTag(tabsList.get(i).getIcon());
+				BaseApplicationManager.imageLoader.DisplayImage(tabsList.get(i).getIcon(), (Activity)but .getContext(),
+						but);
 				TextView tv = (TextView) tab.findViewById(R.id.tvTabButton);
 				tv.setText(tabsList.get(i).getTitle());
 				tv.setTextColor(0xFFFFFFFF);
 				but.setId(i + 1);
-				but.setTag(tabsList.get(i));
+			//	but.setTag(tabsList.get(i));
 				tab.setId(i + 1);
 				llTabsButtons.addView(tab, i);
 				if (i == 0) {
@@ -281,18 +261,20 @@ public class AppBreeder extends Activity {
 			}
 			if (tabsList.size() == 5) {
 				View tab = mInflater.inflate(R.layout.tab_button_layout, null);
-				ImageButton but = (ImageButton) tab
+				ImageView but = (ImageView) tab
 						.findViewById(R.id.ibTabButton);
 				TextView tv = (TextView) tab.findViewById(R.id.tvTabButton);
 				tv.setText(tabsList.get(5).getTitle());
 				but.setId(5);
-				but.setTag(tabsList.get(5));
+				//but.setTag(tabsList.get(5));
 				tab.setId(5);
 				llTabsButtons.addView(tab, 4);
 			} else if (tabsList.size() > 5) {
 				View tab = mInflater.inflate(R.layout.tab_button_layout, null);
-				ImageButton but = (ImageButton) tab
+				ImageView but = (ImageView) tab
 						.findViewById(R.id.ibTabButton);
+				but.setImageResource(R.drawable.stub);
+				
 				TextView tv = (TextView) tab.findViewById(R.id.tvTabButton);
 				tv.setText("More");
 				but.setId(0);
@@ -314,8 +296,8 @@ public class AppBreeder extends Activity {
 	public void tupTab(View v) {
 		int lastSelected = tabsList.indexOf(currentRecord);
 		int i = v.getId();
-		if ((currentRecord == null && v.getId() < 4)
-				|| (lastSelected > 4 && v.getId() < 4)) {
+		if ((currentRecord == null && v.getId() <= 4)
+				|| (lastSelected >= 4 && v.getId() <= 4)) {
 			View lastTab = llTabsButtons.getChildAt(4);
 			if (lastTab != null) {
 				lastTab.setBackgroundColor(0x00000000);
@@ -324,7 +306,7 @@ public class AppBreeder extends Activity {
 			}
 		}
 		if (lastSelected != -1) {
-			if (lastSelected == 0 && v.getId() > 4) {
+			if (lastSelected == 0 && v.getId() > 5) {
 
 			} else {
 				View lastTab = llTabsButtons.getChildAt(lastSelected);
@@ -349,7 +331,8 @@ public class AppBreeder extends Activity {
 		} else {
 			int _id = v.getId() - 1;
 			currentRecord = tabsList.get(_id);
-			if (_id < 4) {
+			rlContentView.addView(currentRecord.getTabView(this),new ViewGroup.LayoutParams(-1,-1));
+			if (_id <= 4) {
 				View lastTab = llTabsButtons.getChildAt(_id);
 				lastTab.setBackgroundColor(0xCCFFFFFF);
 				TextView tv = (TextView) lastTab.findViewById(R.id.tvTabButton);
@@ -360,7 +343,7 @@ public class AppBreeder extends Activity {
 
 			switch (_id) {
 			case 0:
-				rlContentView.setBackgroundColor(0xFF000000);
+				rlContentView.setBackgroundColor(0xFF00F00F);
 				break;
 			case 1:
 				rlContentView.setBackgroundColor(0xFFFF0000);
@@ -377,6 +360,21 @@ public class AppBreeder extends Activity {
 			}
 
 		}
+	}
+	@Override
+	public void onBackPressed() {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mContext);
+		alertBuilder.setMessage("Do you  want exit from app?");
+		alertBuilder.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			System.exit(0);	
+			}
+		});
+		alertBuilder.setNegativeButton("No", null);
+		alertBuilder.show();
+	//	super.onBackPressed();
 	}
 	public void setSelectedTub()
 	{

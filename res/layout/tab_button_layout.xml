@@ -2,15 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android">
 	<RelativeLayout android:layout_width="66dip"
 		android:layout_height="66dip" android:id="@+id/rrTabButton">
-		<ImageButton android:background="@drawable/icon"
+		<ImageView 
 			android:layout_height="wrap_content" android:layout_alignParentTop="true"
 			android:layout_centerHorizontal="true" android:layout_width="wrap_content"
 			android:layout_above="@+id/tvTabButton" android:id="@+id/ibTabButton"
-			android:onClick="tupTab"></ImageButton>
+			android:onClick="tupTab"></ImageView>
 		<TextView android:layout_height="wrap_content" android:text="TextView"
-			android:layout_alignParentBottom="true" android:layout_width="match_parent"
+			android:layout_alignParentBottom="true" android:layout_width="match_parent" android:textSize="10dp"
 			android:layout_centerHorizontal="true" android:gravity="center_vertical|center_horizontal"
-			android:id="@+id/tvTabButton" android:ellipsize="end" android:lines="1"
+			android:id="@+id/tvTabButton" android:ellipsize="end" android:lines="2"
 			android:scrollHorizontally="true"></TextView>
 	</RelativeLayout>
 </RelativeLayout>

@@ -5,4 +5,7 @@
     <string name="appID">1</string>
     <string name="app_brend">preview.appbreeder</string>
     <string name="service_host">http://devdata.appbreeder.com/Service.asmx</string>
+    <string name="baseDomainForResources">http://dev2.appbreeder.com</string>
+    
+    
 </resources>

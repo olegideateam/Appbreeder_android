@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import appbreeder.bll.BaseApplicationManager;
 import appbreeder.database.DBOpenerHelper;
 
 public class TabsDBManager {
@@ -149,37 +150,29 @@ public class TabsDBManager {
 			cur = sqldb.query(DBOpenerHelper.ABTAB_TABLE_NAME, null,"AppID =?",
 					new String[]{AppID},
 					null,null,"NavOrder");
+			
+//			cur = sqldb.rawQuery("select * from "+ DBOpenerHelper.ABTAB_TABLE_NAME +" a JOIN " 
+//					+ DBOpenerHelper.ABGADGET_RSSFEED_TABLE_NAME +" b in v"+
+//					" where AppID =?",
+//					new String[]{AppID});
 				
 			if(cur != null){
 				cur.moveToFirst();
 				
-				
 				for (int i = 0; i < cur.getCount() ; i++)
 				{
-					
-					ABTabRecord vo = new ABTabRecord();				
-				
-					vo.setID(Integer.parseInt(cur.getString(0)));
-					vo.setParentID(Integer.parseInt(cur.getString(1)));
-					vo.setAppID(Integer.parseInt(cur.getString(2)));
-					vo.setGadgetType(cur.getString(3));
-					vo.setTitle(cur.getString(4));
-					vo.setIcon(cur.getString(5));
-					vo.setNavOrder(cur.getString(6));
-					vo.setIsActive(cur.getString(7));
-					vo.setServerTimeStamp(cur.getString(8));
-					vo.setLongitude(Double.parseDouble(cur.getString(9)));
-					vo.setLatitude(Double.parseDouble(cur.getString(10)));
-					vo.setDisplayRangeMeters(Integer.parseInt(cur.getString(11)));
-					vo.setPassword(cur.getString(12));
-					vo.setAccesMode(cur.getString(13));
-					vo.setCustomIcon30URL(cur.getString(14));
-					vo.setCustomIcon60URL(cur.getString(15));
-					vo.setCustomNavBarImage250URL(cur.getString(16));
+					String gadgetType=cur.getString(cur.getColumnIndex(ABTabRecord.c_GadgetType));
+					ABTabRecord tab ;
+					if(gadgetType.equals("ABGadget_RSSFeed"))
+						tab= new ABGadget_RSSFeed(sqldb,cur);
+					else if(gadgetType.equals("ABGadget_Facebook"))
+						tab= new ABGadget_Facebook(sqldb,cur);
+					else if(gadgetType.equals("ABGadget_PhotoGallery"))
+						tab= new ABGadget_PhotoGallery(sqldb,cur);
+					else
+						tab= new ABTabRecord(sqldb,cur);
 	
-					
-					
-					tabs.add(vo);
+					tabs.add(tab);
 					
 					cur.moveToNext();
 				}
