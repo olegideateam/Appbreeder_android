@@ -46,17 +46,22 @@ public class TabsGridAdapter extends BaseAdapter {
 		if (convertView==null) {
 			View tab = mInflater.inflate(R.layout.tab_button_layout, null);
 			convertView = tab;
+			ABTabRecord	curentTab=tabsList.get(position+4);
+			View vTab=tab.findViewById(R.id.rrTabButton);
 			ImageView but = (ImageView) convertView.findViewById(R.id.ibTabButton);
-			but.setTag(tabsList.get(position+4).getIcon());
+			
+			but.setTag(curentTab.getIcon());
 			BaseApplicationManager.imageLoader.DisplayImage(tabsList.get(position+4).getIcon(), (Activity)but .getContext(),
 					but);
-			tab.setId(position+5);
-			
-			but.setId(position+5);
+			vTab.setId(position+5);
+			//tab.setId(position+5);
+			vTab.setTag(curentTab);
+			//but.setId(position+5);
 			TextView tv = (TextView) tab.findViewById(R.id.tvTabButton);
 			
-			tv.setText(tabsList.get(position+4).getTitle());
-			convertView.setId(position+4);
+			tv.setText(curentTab.getTitle());
+//			convertView.setId(position+4)
+
 		}
 		
 		

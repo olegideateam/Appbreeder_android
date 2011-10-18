@@ -7,8 +7,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -30,7 +27,7 @@ import appbreeder.database.AppDBManager;
 import appbreeder.netupdate.RequestBuilder;
 import appbreeder.netupdate.UpdateManager;
 
-public class AppBreeder extends Activity {
+public class AppBreeder extends BaseActivity {
 
 	private LinearLayout llTabsButtons;
 	private RelativeLayout rlContentView;
@@ -38,11 +35,41 @@ public class AppBreeder extends Activity {
 	private LinearLayout gridParent;
 	private GridView gvMoreTabs;
 	private Context mContext;
-	
+
 	private ABTabRecord currentRecord = null;
 	private ArrayList<ABTabRecord> tabsList = new ArrayList<ABTabRecord>();;
 
 	private static ProgressDialog progressDialog = null;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setContentView(R.layout.main);
+		setTitle("Loading...");
+		super.setNavBarGradient(0xFFEEEEEE, 0xFF000000);
+
+		mContext = this;
+		BaseApplicationManager.initBaseData(this);
+	
+		progressDialog = new ProgressDialog(AppBreeder.this);
+		progressDialog.setTitle("Please Wait...");
+		progressDialog.setCancelable(false);
+
+		llTabsButtons = (LinearLayout) this.findViewById(R.id.llTabsView);
+		rlContentView = (RelativeLayout) this.findViewById(R.id.rlContentView);
+		mInflater = (LayoutInflater) llTabsButtons.getContext()
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		gridParent = (LinearLayout) mInflater.inflate(R.layout.more_layout,
+				null);
+		gvMoreTabs = (GridView) gridParent.findViewById(R.id.gvMoreTabs);
+		gvMoreTabs.setAdapter(new TabsGridAdapter(this, tabsList));
+		RequestBuilder.getServiseHost(this);
+		// this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		UpdateManager.updateDataBase(1, progressBarHandler);
+		// loadingNetDB();
+
+	}
 
 	public Handler progressBarHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -55,7 +82,7 @@ public class AppBreeder extends Activity {
 				break;
 			case UpdateManager.START_TABS:
 				hideDialog();
-				BaseApplicationManager.currentDBPath=msg.obj.toString();
+				BaseApplicationManager.currentDBPath = msg.obj.toString();
 				AppBreeder.this.setTabs();
 				break;
 
@@ -85,39 +112,11 @@ public class AppBreeder extends Activity {
 		progressDialog.show();
 	}
 
-	/** Called when the activity is first created. */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
-		mContext = this;
-		BaseApplicationManager.initBaseData(this);
-		progressDialog = new ProgressDialog(AppBreeder.this);
-		progressDialog.setTitle("Please Wait...");
-		progressDialog.setCancelable(false);
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
 
-		llTabsButtons = (LinearLayout) this.findViewById(R.id.llTabsView);
-		rlContentView = (RelativeLayout) this.findViewById(R.id.rlContentView);
-		mInflater = (LayoutInflater) llTabsButtons.getContext()
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		gridParent = (LinearLayout) mInflater.inflate(R.layout.more_layout,
-				null);
-		gvMoreTabs = (GridView) gridParent.findViewById(R.id.gvMoreTabs);
-		gvMoreTabs.setAdapter(new TabsGridAdapter(this, tabsList));
-		RequestBuilder.getServiseHost(this);
-		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		UpdateManager.updateDataBase(1, progressBarHandler);
-		// loadingNetDB();
-
-	}
-
-	Handler handlerCallbackgetDataBase = new Handler() {
-		public void handleMessage(Message msg) {
-		};
-	};
-
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
 	}
 
 	// public void loadingNetDB() {
@@ -234,162 +233,124 @@ public class AppBreeder extends Activity {
 			initAppData();
 			TabsDBManager tabsManager = new TabsDBManager(this);
 
-			tabsList = tabsManager.getTabsRecords(Integer.toString(BaseApplicationManager.currentApp
-					.getID()));
-
+			tabsList = tabsManager.getTabsRecords(Integer
+					.toString(BaseApplicationManager.currentApp.getID()));
+			RequestBuilder.buildReqest_checkABTab(BaseApplicationManager.currentApp.getID(), tabsList );
 			llTabsButtons.removeAllViews();
 
 			int faceTabsNumber = java.lang.Math.min(tabsList.size(), 4);
 
 			for (int i = 0; i < faceTabsNumber; i++) {
 				View tab = mInflater.inflate(R.layout.tab_button_layout, null);
-				ImageView but = (ImageView) tab
-						.findViewById(R.id.ibTabButton);
+				View vTab = tab.findViewById(R.id.rrTabButton);
+				ImageView but = (ImageView) tab.findViewById(R.id.ibTabButton);
 				but.setTag(tabsList.get(i).getIcon());
-				BaseApplicationManager.imageLoader.DisplayImage(tabsList.get(i).getIcon(), (Activity)but .getContext(),
-						but);
+				BaseApplicationManager.imageLoader.DisplayImage(tabsList.get(i)
+						.getIcon(), (Activity) but.getContext(), but);
 				TextView tv = (TextView) tab.findViewById(R.id.tvTabButton);
 				tv.setText(tabsList.get(i).getTitle());
 				tv.setTextColor(0xFFFFFFFF);
-				but.setId(i + 1);
-			//	but.setTag(tabsList.get(i));
-				tab.setId(i + 1);
+				vTab.setId(i + 1);
+				vTab.setTag(tabsList.get(i));
 				llTabsButtons.addView(tab, i);
 				if (i == 0) {
-					this.tupTab(but);
+					this.tupTab(vTab);
 				}
 			}
 			if (tabsList.size() == 5) {
 				View tab = mInflater.inflate(R.layout.tab_button_layout, null);
-				ImageView but = (ImageView) tab
-						.findViewById(R.id.ibTabButton);
+				View vTab = tab.findViewById(R.id.rrTabButton);
+
+				ImageView but = (ImageView) tab.findViewById(R.id.ibTabButton);
 				TextView tv = (TextView) tab.findViewById(R.id.tvTabButton);
 				tv.setText(tabsList.get(5).getTitle());
-				but.setId(5);
-				//but.setTag(tabsList.get(5));
-				tab.setId(5);
+				vTab.setId(5);
 				llTabsButtons.addView(tab, 4);
 			} else if (tabsList.size() > 5) {
 				View tab = mInflater.inflate(R.layout.tab_button_layout, null);
-				ImageView but = (ImageView) tab
-						.findViewById(R.id.ibTabButton);
+				View vTab = tab.findViewById(R.id.rrTabButton);
+
+				ImageView but = (ImageView) tab.findViewById(R.id.ibTabButton);
 				but.setImageResource(R.drawable.stub);
-				
+
 				TextView tv = (TextView) tab.findViewById(R.id.tvTabButton);
 				tv.setText("More");
-				but.setId(0);
-				tab.setId(0);
+
+				// but.setId(0);
+				vTab.setId(0);
 				llTabsButtons.addView(tab, 4);
 				gvMoreTabs.setAdapter(new TabsGridAdapter(this, tabsList));
 			}
 
 		}
-		
 
 	}
-	
-	public void initAppData()
-	{
-		setTitle(BaseApplicationManager.currentApp.getAppName());
+
+	public void initAppData() {
+		// setTitle(BaseApplicationManager.currentApp.getAppName());
 	}
-	
+
+	View lastSelectedView;
+
 	public void tupTab(View v) {
-		int lastSelected = tabsList.indexOf(currentRecord);
-		int i = v.getId();
-		if ((currentRecord == null && v.getId() <= 4)
-				|| (lastSelected >= 4 && v.getId() <= 4)) {
-			View lastTab = llTabsButtons.getChildAt(4);
-			if (lastTab != null) {
-				lastTab.setBackgroundColor(0x00000000);
-				TextView tv = (TextView) lastTab.findViewById(R.id.tvTabButton);
-				tv.setTextColor(0xFFFFFFFF);
-			}
-		}
-		if (lastSelected != -1) {
-			if (lastSelected == 0 && v.getId() > 5) {
 
-			} else {
-				View lastTab = llTabsButtons.getChildAt(lastSelected);
-				if (lastTab != null) {
-					lastTab.setBackgroundColor(0x00000000);
-					TextView tv = (TextView) lastTab
-							.findViewById(R.id.tvTabButton);
-					tv.setTextColor(0xFFFFFFFF);
-				}
-
+		if (lastSelectedView != null && v.getId() <= 4) {
+			if (lastSelectedView.getId() > 4) {
+				lastSelectedView = ((ViewGroup) llTabsButtons.getChildAt(4))
+						.getChildAt(0);
 			}
+			setUnSelectedTub(lastSelectedView);
 		}
 		rlContentView.removeAllViews();
 		if (v.getId() == 0) {
-			rlContentView.setBackgroundColor(0xFF000000);
+			// rlContentView.setBackgroundColor(0xFF0000FF);
 			rlContentView.addView(gridParent);
 			currentRecord = null;
-			View lastTab = llTabsButtons.getChildAt(4);
-			lastTab.setBackgroundColor(0xCCFFFFFF);
-			TextView tv = (TextView) lastTab.findViewById(R.id.tvTabButton);
-			tv.setTextColor(0xFF000000);
+			setTitle("More");
+
+			setSelectedTub(v);
 		} else {
-			int _id = v.getId() - 1;
-			currentRecord = tabsList.get(_id);
-			rlContentView.addView(currentRecord.getTabView(this),new ViewGroup.LayoutParams(-1,-1));
-			if (_id <= 4) {
-				View lastTab = llTabsButtons.getChildAt(_id);
-				lastTab.setBackgroundColor(0xCCFFFFFF);
-				TextView tv = (TextView) lastTab.findViewById(R.id.tvTabButton);
-				tv.setTextColor(0xFF000000);
+			if (lastSelectedView != null && lastSelectedView.getTag() != null) {
+				((ABTabRecord) lastSelectedView.getTag()).closeGadget();
 			}
-
-			_id = _id % 4;
-
-			switch (_id) {
-			case 0:
-				rlContentView.setBackgroundColor(0xFF00F00F);
-				break;
-			case 1:
-				rlContentView.setBackgroundColor(0xFFFF0000);
-				break;
-			case 2:
-				rlContentView.setBackgroundColor(0xFFFFFF00);
-				break;
-			case 3:
-				rlContentView.setBackgroundColor(0xFFFFFFFF);
-				break;
-			default:
-
-				break;
+			currentRecord = (ABTabRecord) v.getTag();
+			setTitle(currentRecord.getTitle());
+			rlContentView.addView(currentRecord.getTabView(this),
+					new ViewGroup.LayoutParams(-1, -1));
+			if (v.getId() <= 4) {
+				setSelectedTub(v);
 			}
-
 		}
+		lastSelectedView = v;
 	}
+
 	@Override
 	public void onBackPressed() {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mContext);
 		alertBuilder.setMessage("Do you  want exit from app?");
-		alertBuilder.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-			System.exit(0);	
-			}
-		});
+		alertBuilder.setPositiveButton("Yes",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						System.exit(0);
+					}
+				});
 		alertBuilder.setNegativeButton("No", null);
 		alertBuilder.show();
-	//	super.onBackPressed();
 	}
-	public void setSelectedTub()
-	{
-		rlContentView.setBackgroundColor(0xFF000000);
-		rlContentView.addView(gridParent);
-		currentRecord = null;
-		View lastTab = llTabsButtons.getChildAt(4);
-		lastTab.setBackgroundColor(0xCCFFFFFF);
-		TextView tv = (TextView) lastTab.findViewById(R.id.tvTabButton);
+
+	public void setSelectedTub(View v) {
+		v.setBackgroundColor(0xCCFFFFFF);
+		TextView tv = (TextView) v.findViewById(R.id.tvTabButton);
 		tv.setTextColor(0xFF000000);
 	}
-	public void setUnSelectedTub(View view)
-	{
-	
-		
+
+	public void setUnSelectedTub(View v) {
+		v.setBackgroundColor(0x00000000);
+		TextView tv = (TextView) v.findViewById(R.id.tvTabButton);
+		tv.setTextColor(0xFFFFFFFF);
+
 	}
-	
+
 }

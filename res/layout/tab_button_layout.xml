@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android">
 	<RelativeLayout android:layout_width="66dip"
-		android:layout_height="66dip" android:id="@+id/rrTabButton">
+		android:layout_height="66dip" android:id="@+id/rrTabButton" android:onClick="tupTab">
 		<ImageView 
 			android:layout_height="wrap_content" android:layout_alignParentTop="true"
 			android:layout_centerHorizontal="true" android:layout_width="wrap_content"
 			android:layout_above="@+id/tvTabButton" android:id="@+id/ibTabButton"
-			android:onClick="tupTab"></ImageView>
+			></ImageView>
 		<TextView android:layout_height="wrap_content" android:text="TextView"
 			android:layout_alignParentBottom="true" android:layout_width="match_parent" android:textSize="10dp"
 			android:layout_centerHorizontal="true" android:gravity="center_vertical|center_horizontal"

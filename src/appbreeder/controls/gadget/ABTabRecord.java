@@ -30,6 +30,7 @@ public class ABTabRecord {
 	private String customIcon60URL;
 	private String customNavBarImage250URL;
 	
+	protected  int STATE_GADGET;
 	public static String c_ID="ID";
 	public static String c_ParentID="ParentID";
 	public static String c_AppID="AppID";
@@ -47,6 +48,11 @@ public class ABTabRecord {
 	public static String c_CustomIcon30URL="CustomIcon30URL";
 	public static String c_CustomIcon60URL="CustomIcon60URL";
 	public static String c_CustomNavBarImage250URL="CustomNavBarImage250URL";
+	
+	public static int STATE_LOADING=1;
+	public static int STATE_LOADED=0;
+	public static int STATE_STOPED=-1;
+	
 	
 	
 	public ABTabRecord(SQLiteDatabase sqldb,Cursor cur)
@@ -271,6 +277,10 @@ public class ABTabRecord {
 		result.addView(tmp,relParams);
 		return result;
 
+	}
+	public void closeGadget()
+	{
+		
 	}
 
 }

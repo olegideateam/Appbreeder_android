@@ -26,6 +26,7 @@ public class UpdateManager {
 	public static final int DISMISS_PROGRESS_DIALOG = 8;
 
 	public static void updateDataBase(int appID, final Handler callbackHandler) {
+		
 		Message msgDialog = new Message();
 		msgDialog.what = SHOW_PROGRESS_DIALOG;
 		callbackHandler.sendMessage(msgDialog);
@@ -56,9 +57,19 @@ public class UpdateManager {
 								try {
 									jsonobj = new JSONObject(json);
 
-									msg.what = START_DOWNLOAD_DB;
+									
 									if (jsonobj.has("d")) {
+										msg.what = START_DOWNLOAD_DB;
 										msg.obj = jsonobj.getString("d");
+										if (callbackHandler != null)
+											callbackHandler.sendMessage(msg);
+									}else
+									{
+										msg.what = SHOW_ERROR;
+										if(jsonobj.has("Message"))
+											msg.obj = jsonobj.getString("Message");
+										else
+											msg.obj =json;
 										if (callbackHandler != null)
 											callbackHandler.sendMessage(msg);
 									}
