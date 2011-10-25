@@ -51,8 +51,7 @@ public class RequestBuilder {
 			request.setEntity(new ByteArrayEntity(json.toString().getBytes("UTF8")));
 		} catch (UnsupportedEncodingException e) {	
 			e.printStackTrace();
-		}
-     
+		} 
         
 		return request;
 	}
